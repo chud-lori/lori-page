@@ -3,12 +3,13 @@ layout: ../layouts/AboutLayout.astro
 title: "About"
 ---
 
-AstroPaper is a minimal, responsive and SEO-friendly Astro blog theme. I designed and crafted this based on [my personal blog](https://satnaing.dev/blog).
+Lori is a passionate software engineer with extensive experience in the tech industry. He has been working hands-on with Linux servers for several years, gaining expertise in tasks ranging from server setup to advanced remastering. His ability to manage and optimize server environments has been a cornerstone of his technical skill set.
 
-This theme is aimed to be accessible out of the box. Light and dark mode are supported by
-default and additional color schemes can also be configured.
+For over five years, Lori has been immersed in web development, working with a variety of tech stacks tailored to meet client requirements. Specializing as a back-end engineer for the past three years, he has delivered robust and efficient solutions to complex challenges. His professional journey also includes contributing to several Artificial Intelligence (AI) and Machine Learning (ML) projects, where he played both research and engineering roles.
 
-This theme is self-documented \_ which means articles/posts in this theme can also be considered as documentations. So, see the documentation for more info.
+Beyond engineering, Lori brings a strong security perspective to his work. His participation in numerous Capture The Flag (CTF) competitions has sharpened his awareness of secure coding practices, ensuring his solutions are not only functional but also resilient against potential vulnerabilities.
+
+Currently, Lori leverages Python as his primary tool to craft innovative software solutions. Outside of his professional endeavors, he has a deep love for learning new technologies and sharing his knowledge within community spaces, fostering growth and collaboration among peers.
 
 <div>
   <img src="/assets/dev.svg" class="sm:w-1/2 mx-auto" alt="coding dev illustration">
@@ -16,21 +17,18 @@ This theme is self-documented \_ which means articles/posts in this theme can al
 
 ## Tech Stack
 
-This theme is written in vanilla JavaScript (+ TypeScript for type checking) and a little bit of ReactJS for some interactions. TailwindCSS is used for styling; and Markdown is used for blog contents.
+- Go
+- Python
+- NodeJS
+- PHP
+- C++
+- C
+- MySQL
+- PostgreSQL
+- MongoDB
+- ElasticSearch
+- Grafana
+- Datadog
+- OpenTelemetry
 
-## Features
-
-Here are certain features of this site.
-
-- fully responsive and accessible
-- SEO-friendly
-- light & dark mode
-- fuzzy search
-- super fast performance
-- draft posts
-- pagination
-- sitemap & rss feed
-- highly customizable
-
-If you like this theme, you can star/contribute to the [repo](https://github.com/satnaing/astro-paper).  
-Or you can even give any feedback via my [email](mailto:contact@satnaing.dev).
+<!-- ## Features -->
