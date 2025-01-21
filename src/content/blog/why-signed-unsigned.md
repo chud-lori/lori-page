@@ -1,7 +1,7 @@
 ---
 author: Lori
-pubDatetime: 2025-01-22T00:13:00+07:00
-modDatetime: 2025-01-22T00:48:00+07:00
+pubDatetime: 2025-01-21T18:08:02.534Z
+modDatetime:
 title: Why signed int -10 is higher than unsigned int 5 in C?
 slug: why-signed-unsigned-comparison
 featured: true
