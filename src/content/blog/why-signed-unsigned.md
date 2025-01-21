@@ -1,7 +1,7 @@
 ---
-author: :pro
+author: Lori
 pubDatetime: 2025-01-22T00:13:00Z
-modDatetime: 2025-01-22T00:13:00Z
+modDatetime: 2025-01-22T00:48:00Z
 title: Why signed int -10 is higher than unsigned int 5?
 slug: why-signed-unsigned-comparison
 featured: true
@@ -11,8 +11,7 @@ tags:
   - c
   - cplusplus
 description:
-  Some rules & recommendations for creating or adding new posts using AstroPaper
-  theme.
+  I just scrolling Twitter when I found an interesting tweet about C code screenshot and its behavior, as show in the attached image, the code looks just fine until you look at code execution result.
 ---
 
 I just scrolling Twitter when I found an interesting tweet about C code screenshot and its behavior, as show in the attached image, the code looks just fine until you look at code execution result.
