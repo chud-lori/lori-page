@@ -11,10 +11,10 @@ tags:
   - c
   - cplusplus
 description:
-  I just scrolling Twitter when I found an interesting tweet about C code screenshot and its behavior, as show in the attached image, the code looks just fine until you look at code execution result.
+  I just scrolling Twitter when I found an interesting tweet about C code screenshot and its behavior, as shown in the attached image, the code looks just fine until you look at code execution result.
 ---
 
-I just scrolling Twitter when I found an interesting tweet about C code screenshot and its behavior, as show in the attached image, the code looks just fine until you look at code execution result.
+I just scrolling Twitter when I found an interesting tweet about C code screenshot and its behavior, as shown in the attached image, the code looks just fine until you look at code execution result.
 
 ![Twitter](@assets/images/blog/why_unsgined_signed/image.png)
 
@@ -78,5 +78,8 @@ This rules also applied on C++, I tried in C++14
 ### How to avoid that then?
 
 I would personally to check the negative value first to avoid such cases, if the first value is negative then I will just return the value immediately, just keep it simple lol.
+
+But, we can also cast the unsigned integer into signed integer during comparison
+`(signValue > (int)unsignValue)`
 
 That’s all, thanks for visit and reading this, cheers!!!
