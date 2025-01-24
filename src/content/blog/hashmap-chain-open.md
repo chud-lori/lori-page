@@ -27,7 +27,7 @@ To implement HashMap data structure we need a hashing function to determine wher
 2. prime number
 3. deficient number ([more detail](https://en.wikipedia.org/wiki/Deficient_number))
 
-The algorithm the shifts `hash` 5 positions to left and adds it to itself, which is equivalent of multiplying the hash by 33, that’s why it also called `33 times hashing` . Finally, it adds each character of the key to the value hash.
+The algorithm shifts `hash` 5 positions to left and adds it to itself, which is equivalent of multiplying the hash by 33, that’s why it also called `33 times hashing` . Finally, it adds each character of the key to the value hash.
 
 ```c
 unsigned long hash(const char *str) {
