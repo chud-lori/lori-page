@@ -130,7 +130,7 @@ newNode->next = map->buckets[index];
 map->buckets[index] = newNode;
 ```
 
-The full implementation can check in [here](https://github.com/chud-lori/hashmap-implementation)
+The full implementation can check in [here](https://github.com/chud-lori/hashmap-implementation/blob/main/separate_chaining.c)
 
 ### Pros
 
@@ -302,7 +302,7 @@ void delete(HashMap *map, const char *key) {
 
 As shown in the function `search` and `delete` the probing stop when the next slot is not occupied because in linear probing, keys are always inserted in the first available slot.
 
-The full implementation can check in [here](https://github.com/chud-lori/hashmap-implementation)
+The full implementation can check in [here](https://github.com/chud-lori/hashmap-implementation/blob/main/open_addressing.c)
 
 ### Pros
 
