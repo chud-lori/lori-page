@@ -13,7 +13,7 @@ description:
   HashMap, a data structure that efficiently stores key-value pairs, also a data structured loved by programmer because of its advantage with fast lookup, insertion, and deletion which typically have an average time complexity of O(1). It uses hash function to compute an index into an array of buckets where the value can be found.
 ---
 
-HashMap, a data structure that efficiently stores key-value pairs, also a data structured loved by programmer because of its advantage with fast lookup, insertion, and deletion which typically have an average time complexity of O(1). It uses hash function to compute an index into an array of buckets where the value can be found.
+HashMap, a data structure that efficiently stores key-value pairs, also a data structured loved by programmer because of its advantage with fast lookup, insertion, and deletion which typically have an average time complexity of `O(1)`. It uses hash function to compute an index into an array of buckets where the value can be found.
 
 We know that in most programming language, has provide HashMap built-in implementation, but understanding the underlying concept principles might deepen your knowledge and satisfy your curiosity to get to know the thing under the hood of your favorite language 😜
 
