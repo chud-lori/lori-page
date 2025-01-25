@@ -1,0 +1,55 @@
+<div class="giscus"></div>
+
+<script>
+function getGiscusTheme() {
+  const theme = localStorage.getItem("theme");
+  return theme === "dark" ? "dark" : "light";
+}
+
+function setGiscusTheme() {
+  function sendMessage(message: { setConfig: { theme: string } }) {
+    const iframe = document.querySelector('iframe.giscus-frame') as HTMLIFrameElement;
+    const window = iframe?.contentWindow;
+    if (!!window) {
+      iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+    }
+  }
+
+  sendMessage({
+    setConfig: {
+      theme: getGiscusTheme(),
+    },
+  });
+}
+
+document.addEventListener("astro:page-load", function () {
+  const giscusAttributes = {
+      "src": "https://giscus.app/client.js",
+      "data-repo": "chud-lori/lori-page",
+      "data-repo-id": "",
+      "data-category": "General",
+      "data-category-id": "",
+      "data-mapping": "pathname",
+      "data-strict": "0",
+      "data-reactions-enabled": "1",
+      "data-emit-metadata": "0",
+      "data-input-position": "bottom",
+      "data-theme": getGiscusTheme(),
+      "data-lang": "en",
+      "crossorigin": "anonymous",
+      "async": "",
+  };
+
+  const giscusScript = document.createElement("script");
+  Object.entries(giscusAttributes).forEach(([key, value]) => giscusScript.setAttribute(key, value));
+  document.getElementById("comment")?.appendChild(giscusScript);
+
+  const themeButtons = ["#light-theme-button", "#dark-theme-button", "#system-theme-button"];
+  themeButtons.forEach(selector => {
+    const button = document.querySelector(selector);
+    if (button) {
+      button.addEventListener("click", setGiscusTheme);
+    }
+  });
+});
+</script>

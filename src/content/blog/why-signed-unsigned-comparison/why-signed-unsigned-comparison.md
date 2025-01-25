@@ -16,7 +16,7 @@ description:
 
 I just scrolling Twitter when I found an interesting tweet about C code screenshot and its behavior, as shown in the attached image, the code looks just fine until you look at code execution result.
 
-![Twitter](@assets/images/blog/why_unsgined_signed/image.png)
+![Twitter](./image.png)
 
 Shown in the image that `x > y` which represent as `is -10 higher than 5` and the result of that comparison is said that -10 is higher than 5 by print out string `"this is embarrassing"` , hmmm how could? I didn’t just believe it, and try on my local using this code:
 ```c
@@ -33,7 +33,7 @@ int main() {
 }
 ```
 And boom…
-![boom](@assets/images/blog/why_unsgined_signed/image1.png)
+![boom](./image1.png)
 
 Indeed, the C program has something not right, and then I did a little research what the heck is this behavior, until I found out that this happen because of **Integer Promotion Rules.**
 
@@ -67,13 +67,13 @@ And the hex for that is `0xFFFFFFE3` which is the two’s complement representat
 
 So in the above screenshot code, the -10 will represent as `11111111 11111111 11111111 11110110` or `0xFFFFFFF6` , while 5 will represent as `00000000 00000000 00000000 00000101` or `0x5` which mean `0xFFFFFFF6` is higher than `0x5`
 
-![boom](@assets/images/blog/why_unsgined_signed/image2.png)
-or in Decimal numbers `4294967286` for `0xFFFFFFF6` and 5 for `0x5`
+![comparison](./image2.png)
+or in decimal numbers `4294967286` for `0xFFFFFFF6` and 5 for `0x5`
 
-![boom](@assets/images/blog/why_unsgined_signed/image3.png)
+![integer value](./image3.png)
 
 This rules also applied on C++, I tried in C++14
-![boom](@assets/images/blog/why_unsgined_signed/image4.png)
+![c++](./image4.png)
 
 ### How to avoid that then?
 
