@@ -11,10 +11,10 @@ tags:
   - cplusplus
   - system
 description:
-  Array is data derived data type that has been used anywhere due to its ability to constructed primitive data types (int, float, char) and grouped multiple value of the same type together.
+  Array is derived data type that has been used anywhere due to its ability to constructed primitive data types (int, float, char) and grouped multiple value of the same type together.
 ---
 
-Array is data derived data type that has been used anywhere due to its ability to constructed primitive data types (int, float, char) and grouped multiple value of the same type together.
+Array is derived data type that has been used anywhere due to its ability to constructed primitive data types (int, float, char) and grouped multiple value of the same type together.
 
 There are multiple array implementation on other languages, like `list` in Python. But, we will take a look on how array behave on C/C++.
 
