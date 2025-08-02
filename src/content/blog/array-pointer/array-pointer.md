@@ -9,6 +9,7 @@ draft: false
 tags:
   - c
   - cplusplus
+  - low-level
   - system
 description:
   Array is derived data type that has been used anywhere due to its ability to constructed primitive data types (int, float, char) and grouped multiple value of the same type together.
