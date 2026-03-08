@@ -2,15 +2,14 @@
 author: Lori
 pubDatetime: 2026-03-08T08:16:10.580Z
 modDatetime:
-title: The "System Operator" Shift: Why AI Agents Won’t Replace Senior Engineers
+title: "The \"System Operator\" Shift: Why AI Agents Won’t Replace Senior Engineers"
 slug: system-operator-shift
 featured: true
 draft: false
 tags:
   - career
   - AI
-description:
-  AI has become the ultimate "sledgehammer" for boilerplate, but the "scalpel" of the Senior Architect is irreplaceable. This article explores the transition from code-worker to system operator and why deep technical mastery is the only way to command the next generation of AI agents.
+description: "AI has become the ultimate \"sledgehammer\" for boilerplate, but the \"scalpel\" of the Senior Architect is irreplaceable. This article explores the transition from code-worker to system operator and why deep technical mastery is the only way to command the next generation of AI agents."
 ---
 
 In modern military doctrine, there is a recurring debate: if a $500 drone can eliminate a high-value target, why do we still need the 75th Ranger Regiment? Similarly, in the tech sector, a parallel question is echoing: if an AI coding agent can write a thousand lines of Python in seconds, why do we still need Software Engineers?
