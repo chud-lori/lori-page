@@ -14,7 +14,7 @@ description: Understanding CVE-2026-31431, how page-cache corruption can become 
 
 ![root](./image.png)
 
-On Thursday evening when I’m looking for what i’m gonna do during long weekend— May Day— I found interesting posts on several platform and it quite happening about new CVE has been dropped, it’s `CVE-2026-31431` ****or also known as Copy Fail. And I decide will explore this stuff during my long weekend.
+On Thursday evening when I’m looking for what i’m gonna do during long weekend— May Day— I found interesting posts on several platform and it quite happening about new CVE has been dropped, it’s `CVE-2026-31431` or also known as Copy Fail. And I decide will explore this stuff during my long weekend.
 
 Copy Fail is a Linux Kernel vulnerability in the crypto subsystem. The bug involves the Linux kernel crypto API, `AF_ALG`, `splice()`, `authencesn`, and the page cache. This bug lets unprivileged local user trigger controlled 4-byte write into the page cache of a readable file, which can be turned into local privilege escalation under affected conditions. Many Linux distributions with affected kernel versions shipped since around 2017 may be impacted.
 
