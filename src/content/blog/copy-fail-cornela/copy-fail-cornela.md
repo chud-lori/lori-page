@@ -2,7 +2,7 @@
 author: Lori
 pubDatetime: 2026-05-02T12:25:42.961Z
 modDatetime:
-title: Copy Fail, Containers, and Cornela: Detecting Shared-Kernel Risk
+title: "Copy Fail, Containers, and Cornela: Detecting Shared-Kernel Risk"
 slug: copy-fail-cornela
 featured: true
 draft: false
