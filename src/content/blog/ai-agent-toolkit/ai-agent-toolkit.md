@@ -1,6 +1,6 @@
 ---
 author: Lori
-pubDatetime: 2026-07-14T10:00:00.000Z
+pubDatetime: 2026-07-14T01:30:00.000Z
 modDatetime:
 title: "Memory, Context, and a Pixel Dragon: Three Tools I Built to Live with AI Coding Agents"
 slug: ai-agent-toolkit
