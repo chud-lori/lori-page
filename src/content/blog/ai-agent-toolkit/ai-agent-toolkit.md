@@ -25,13 +25,13 @@ The models keep getting smarter, but these are *plumbing* problems, and plumbing
 
 **Repo:** [github.com/chud-lori/agent-workbench](https://github.com/chud-lori/agent-workbench)
 
-Agent Workbench is a local MCP server (plus a CLI) that gives every agent on my machine three things they normally lack: a **persistent memory**, a **code index across all my repos**, and **setup diagnostics**. The pitch fits in one line: *what Claude learns today, Codex recalls tomorrow.*
+Agent Workbench is a local MCP server (plus a CLI) that gives every agent on my machine three things they normally lack: a **persistent memory**, a **code index across all my repos**, and **setup diagnostics**. It's not tied to one vendor — the setup script registers it with whatever harnesses it finds (Claude Code, Codex, Gemini CLI), and since it speaks plain MCP, any agent that supports the protocol can use it. The pitch fits in one line: *what Claude learns today, Codex recalls tomorrow.*
 
 The core is the **brain** — durable notes stored in SQLite with full-text search. When an agent (or I) learns something worth keeping — a schema quirk, a deploy gotcha, an architectural decision — it stores a note with a kind (`decision`, `fact`, `gotcha`, `todo`, ...), a project, tags, and crucially a **source reference**: a ticket key, a Slack thread, a commit-pinned permalink. Future sessions don't just get a claim; they get a trail back to the source of truth. Notes can be amended, superseded, or resolved — the rule is *correct, don't contradict*, so stale claims get hidden instead of resurfacing as truth.
 
-On top of that sits the **code index**: bm25 full-text search over every repo in `~/repo`, in one call, with incremental refresh. And the tool I actually start every task with is `brief_task`: give it a ticket key or a feature phrase, and it merges code hits, doc hits, matching brain notes, likely repos, and runnable commands into a single context pack. The agent starts the task already knowing what past-me knew.
+On top of that sits the **code index**: bm25 full-text search over every repo under a root directory you configure, in one call, with incremental refresh. And the tool I actually start every task with is `brief_task`: give it a ticket key or a feature phrase, and it merges code hits, doc hits, matching brain notes, likely repos, and runnable commands into a single context pack. The agent starts the task already knowing what past-me knew.
 
-The part I'm most happy with is that memory isn't left to the model's discretion. A set of Claude Code hooks closes the loop at the harness level: a SessionStart hook injects recent notes into every new session (and re-primes after context compaction), a prompt hook surface-matches each of my prompts against the brain — a kind of involuntary recall — and a Stop hook nudges the agent to save durable knowledge before ending a turn. Standing instructions make an agent *likely* to use its memory; hooks make it *guaranteed*.
+The part I'm most happy with is that memory isn't left to the model's discretion. Where the harness supports lifecycle hooks (Claude Code does today), a set of hooks closes the loop at the harness level: a SessionStart hook injects recent notes into every new session (and re-primes after context compaction), a prompt hook surface-matches each of my prompts against the brain — a kind of involuntary recall — and a Stop hook nudges the agent to save durable knowledge before ending a turn. Standing instructions make an agent *likely* to use its memory; hooks make it *guaranteed*.
 
 Two design decisions worth calling out, because they were deliberate:
 
@@ -40,9 +40,11 @@ Two design decisions worth calling out, because they were deliberate:
 
 ## work-mcp: giving the agent eyes on where work actually happens
 
+**Repo:** [github.com/chud-lori/work-mcp](https://github.com/chud-lori/work-mcp)
+
 The second wall was context. My agents could read every line of code but had no idea that the requirements changed in a Slack thread two hours ago.
 
-work-mcp is my answer: a bundle of MCP servers that gives Claude Code **read-only** access to Slack, Google Workspace (Gmail, Drive, Docs, Sheets, Calendar), and Jira/Confluence. The whole thing installs with one idempotent `./setup.sh` — clone it on a new laptop, run the script, drop in the tokens, and the entire "my assistant can see my work tools" environment is back in minutes.
+work-mcp is my answer: a bundle of MCP servers that gives my coding agents **read-only** access to Slack, Google Workspace (Gmail, Drive, Docs, Sheets, Calendar), and Jira/Confluence. The servers are ordinary MCP over stdio, so any MCP-capable host can use them — the bundle pre-wires Claude Code and ships a config for Codex. The whole thing installs with one idempotent `./setup.sh` — clone it on a new laptop, run the script, drop in the tokens, and the entire "my agents can see my work tools" environment is back in minutes.
 
 With it wired up, the workflow changes qualitatively. Instead of copy-pasting a Slack conversation into the terminal, I ask the agent to *read the thread itself*, pull the spec from the Google Doc it links to, cross-reference the Jira ticket, and then start coding. The agent stops working from my paraphrase of the context and starts working from the context.
 
@@ -52,7 +54,7 @@ This is also the tool where I was the most paranoid, because it touches real wor
 - **It acts as me, not as a bot.** It authenticates with my own user credentials, so it sees exactly what I can see — no bot to invite into channels, no new permission surface beyond what I already had.
 - **Local-first, secrets outside git.** The Slack and Google servers run locally over stdio; data flows through my machine. Tokens live in gitignored files and `~/.config`, never in the repo.
 
-I haven't open-sourced this one — it's shaped around my workplace's stack — but the pattern is the point, and it's very reproducible: take the MCP servers for the tools your work lives in, force them read-only at the credential level, and wrap the registration in one script so the setup is disposable.
+This one is shaped around the stack my work happens to live in, but the pattern is the point, and it's very reproducible: take the MCP servers for the tools *your* work lives in, force them read-only at the credential level, and wrap the registration in one script so the setup is disposable.
 
 ## Session Pet: ambient awareness, with a dragon
 
@@ -76,4 +78,4 @@ Looking at the three together, they share a philosophy that I arrived at mostly 
 
 **One tool per problem.** Memory, context, awareness. Each tool is small enough to understand completely, and they compose without knowing about each other: `brief_task` briefs the agent, work-mcp lets it read the surrounding discussion, and the pet dings me when it needs a decision. My role shifts from typing code — and from babysitting terminals — to operating a small system of workers that remember, see, and report.
 
-If you work with AI coding agents daily, my honest advice is: the next capability jump on your desk probably won't come from a better model. It will come from fixing the plumbing — give your agents memory, give them your real context, and make their state visible. You don't need my exact tools for that (though [Agent Workbench](https://github.com/chud-lori/agent-workbench) and [Session Pet](https://github.com/chud-lori/session-pet) are there for the taking). You need the three walls to be gone. Mine are, and I'm not going back.
+If you work with AI coding agents daily, my honest advice is: the next capability jump on your desk probably won't come from a better model. It will come from fixing the plumbing — give your agents memory, give them your real context, and make their state visible. You don't need my exact tools for that (though [Agent Workbench](https://github.com/chud-lori/agent-workbench), [work-mcp](https://github.com/chud-lori/work-mcp), and [Session Pet](https://github.com/chud-lori/session-pet) are there for the taking). You need the three walls to be gone. Mine are, and I'm not going back.
