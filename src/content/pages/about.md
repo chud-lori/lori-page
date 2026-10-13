@@ -9,7 +9,7 @@ description: "About Lori, a software engineer."
 📧 [Email](mailto:reachme@lori.my.id) |
 🔗 [LinkedIn](https://www.linkedin.com/in/chud-lori) |
 💻 [GitHub](https://github.com/chud-lori) |
-🌍 [Website](https://lori.my.id/)
+🌍 [Profile](https://profile.lori.my.id/)
 
 ---
 
