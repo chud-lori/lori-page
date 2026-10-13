@@ -16,9 +16,7 @@ const { title, description, ...props } = data;
 <li class="my-6">
   <a
     href={getPostUrl(id, filePath, Astro.currentLocale)}
-    class:list={[
-      "hover:text-accent inline-block text-lg leading-snug font-medium transition-colors",
-    ]}
+    class="hover:text-accent inline-block text-lg leading-snug font-medium transition-colors"
   >
     <Heading transition:name={toTransitionName(title)}>
       {title}
