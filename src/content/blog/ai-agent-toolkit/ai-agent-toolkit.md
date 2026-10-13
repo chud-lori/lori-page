@@ -1,7 +1,7 @@
 ---
 author: Lori
 pubDatetime: 2026-07-14T01:30:00.000Z
-modDatetime:
+modDatetime: 2026-10-13T00:00:00.000Z
 title: "Memory, Context, and a Pixel Dragon: Three Tools I Built to Live with AI Coding Agents"
 slug: ai-agent-toolkit
 featured: true
@@ -10,72 +10,78 @@ tags:
   - AI
   - tooling
   - agents
-description: "AI coding agents are stateless, blind to your real work context, and silent while they run. I built three small local-first tools — Agent Workbench, work-mcp, and Session Pet — to fix exactly that. Here is what they do and why you might want the same setup."
+description: "AI coding agents forget everything between sessions, can't see the Slack thread or ticket the work came from, and give no sign when they're stuck. I built Agent Workbench, work-mcp, and session-pet to deal with those three problems."
 ---
 
-These days I rarely write code alone. On a normal workday I have two or three AI agent sessions running — Claude Code on one ticket, Codex poking at another — and honestly, they are great at the work itself. But after a few months of living like this, I kept hitting the same three walls, and none of them were about the model's intelligence:
+Most days I have two or three agent sessions open at once: Claude Code on one ticket, Codex on another. They're good at the coding itself. After a few months of working this way, the problems I kept hitting had nothing to do with how smart the model is:
 
-1. **Amnesia.** Every session starts from zero. The gotcha my agent painfully discovered yesterday about our deploy pipeline? Gone. It will happily re-derive it tomorrow, or worse, not re-derive it.
-2. **Blindness.** The real context of my work doesn't live in the repo. It lives in a Slack thread, a Jira ticket, a Google Doc spec. So I became a human clipboard, copy-pasting context into the terminal all day.
-3. **Silence.** An agent that is "working" and an agent that has been sitting on a permission prompt for ten minutes look exactly the same: a terminal tab you're not looking at.
+1. **It forgets.** Every session starts from zero. If an agent spent twenty minutes figuring out a quirk in our deploy pipeline yesterday, today's session doesn't know about it. It either works it out again or gets it wrong.
+2. **It can't see where the work comes from.** Requirements live in a Slack thread, a Jira ticket, a Google Doc. The repo has none of that, so I spent my day copying context into the terminal.
+3. **It doesn't tell me when it's stuck.** A session that's busy and a session that has been waiting on a permission prompt for ten minutes look the same from another tab.
 
-The models keep getting smarter, but these are *plumbing* problems, and plumbing problems don't fix themselves. So I built three small tools, one for each wall. This post introduces all of them: what they are, what problem they solve, and why I think this shape of tooling — local-first, boring tech, zero dependencies — is the right way to build around agents.
+I built one small tool for each problem. Here's what they do and how they're built.
 
-## Agent Workbench: a second brain your agents actually share
+## Agent Workbench: memory shared by every agent
 
 **Repo:** [github.com/chud-lori/agent-workbench](https://github.com/chud-lori/agent-workbench)
 
-Agent Workbench is a local MCP server (plus a CLI) that gives every agent on my machine three things they normally lack: a **persistent memory**, a **code index across all my repos**, and **setup diagnostics**. It's not tied to one vendor — the setup script registers it with whatever harnesses it finds (Claude Code, Codex, Gemini CLI), and since it speaks plain MCP, any agent that supports the protocol can use it. The pitch fits in one line: *what Claude learns today, Codex recalls tomorrow.*
+Agent Workbench is a local MCP server with a CLI. `setup.sh` registers it with whichever of Claude Code, Codex, and Gemini CLI it finds on the machine. It's plain MCP over stdio, so other MCP clients can use it too. Something Claude Code stores today, Codex can recall tomorrow.
 
-The core is the **brain** — durable notes stored in SQLite with full-text search. When an agent (or I) learns something worth keeping — a schema quirk, a deploy gotcha, an architectural decision — it stores a note with a kind (`decision`, `fact`, `gotcha`, `todo`, ...), a project, tags, and crucially a **source reference**: a ticket key, a Slack thread, a commit-pinned permalink. Future sessions don't just get a claim; they get a trail back to the source of truth. Notes can be amended, superseded, or resolved — the rule is *correct, don't contradict*, so stale claims get hidden instead of resurfacing as truth.
+The main piece is the brain: notes in a SQLite database with full-text search. When an agent (or I) learns something worth keeping, like a schema quirk, a deploy gotcha, or a decision, it stores a note with a kind (`decision`, `fact`, `gotcha`, `todo`, and a few others), a project, tags, and a source: the ticket key, the Slack thread, or a link pinned to a commit. A future session gets the claim and a way to check it. When a note turns out to be wrong, the agent amends it or stores a new one that supersedes it, and the old one stops showing up in recall. Contradicting notes don't pile up.
 
-On top of that sits the **code index**: bm25 full-text search over every repo under a root directory you configure, in one call, with incremental refresh. And the tool I actually start every task with is `brief_task`: give it a ticket key or a feature phrase, and it merges code hits, doc hits, matching brain notes, likely repos, and runnable commands into a single context pack. The agent starts the task already knowing what past-me knew.
+Next to the brain is a code index: bm25 search across every repo under the roots you configure, refreshed incrementally. The tool I start most tasks with is `brief_task`. I give it a ticket key or a feature name and it returns matching code, docs, brain notes, the repos that are probably involved, and the commands to run them, all in one result.
 
-The part I'm most happy with is that memory isn't left to the model's discretion. Where the harness supports lifecycle hooks (Claude Code does today), a set of hooks closes the loop at the harness level: a SessionStart hook injects recent notes into every new session (and re-primes after context compaction), a prompt hook surface-matches each of my prompts against the brain — a kind of involuntary recall — and a Stop hook nudges the agent to save durable knowledge before ending a turn. Standing instructions make an agent *likely* to use its memory; hooks make it *guaranteed*.
+On Claude Code, hooks handle the routine parts so I don't depend on the model remembering to:
 
-Two design decisions worth calling out, because they were deliberate:
+- A SessionStart hook loads recent notes into every new session, and again after the context gets compacted.
+- A prompt hook searches the brain with each message I send and injects the top matches.
+- A Stop hook blocks the end of a turn once and asks the agent to save anything worth keeping.
+- A PreToolUse hook makes me approve any Bash command that matches patterns I list. It does nothing until I add patterns.
 
-- **No embeddings, no RAG, no vector database.** Retrieval is SQLite FTS5 with bm25 ranking — exact, explainable, and instant. The LLM is already sitting right there; if a query needs synonyms or expansion, the model can just issue another cheap query. I'll reach for vectors when scale demands it, and not before.
-- **Stdlib-only Python, zero dependencies.** No pip install, no virtualenv, no MCP SDK — even the JSON-RPC layer is hand-rolled. It runs straight from a clone and makes no network or LLM calls. The only file worth backing up is one SQLite database.
+The hooks are best-effort by design and always exit cleanly, because a hook that can break session start is worse than one that sometimes does nothing. Recall still went from "when the model thinks of it" to "every session". Since I first wrote this post, the repo has also picked up six skills (`/standup`, `/why`, `/postmortem`, and others), three subagent types that check the brain before they search, and git hooks that keep AI attribution lines out of my commits.
 
-## work-mcp: giving the agent eyes on where work actually happens
+Two choices were on purpose:
+
+- **No embeddings and no vector database.** Search is SQLite FTS5 with bm25 ranking, so the same query returns the same rows and I can see why something matched. If a query needs synonyms, the model is right there and can run another search. I'll add vectors if keyword search stops being enough. It hasn't yet.
+- **Standard-library Python only.** No pip install, no virtualenv, no MCP SDK. I wrote the JSON-RPC layer myself. It runs from a fresh clone with Python 3.10 or newer, makes no network or LLM calls, and keeps its state in one SQLite file.
+
+## work-mcp: letting the agent read Slack, Docs, and Jira
 
 **Repo:** [github.com/chud-lori/work-mcp](https://github.com/chud-lori/work-mcp)
 
-The second wall was context. My agents could read every line of code but had no idea that the requirements changed in a Slack thread two hours ago.
+My agents could read every line of code but had no idea the requirements changed in a Slack thread two hours ago.
 
-work-mcp is my answer: a bundle of MCP servers that gives my coding agents **read-only** access to Slack, Google Workspace (Gmail, Drive, Docs, Sheets, Calendar), and Jira/Confluence. The servers are ordinary MCP over stdio, so any MCP-capable host can use them — the bundle pre-wires Claude Code and ships a config for Codex. The whole thing installs with one idempotent `./setup.sh` — clone it on a new laptop, run the script, drop in the tokens, and the entire "my agents can see my work tools" environment is back in minutes.
+work-mcp is a bundle of MCP servers for Slack, Google Workspace (Gmail, Drive, Docs, Sheets, Calendar), and Jira/Confluence. One idempotent `./setup.sh` installs the dependencies and registers the servers with Claude Code, and the README covers wiring the same servers into Codex. On a new laptop I clone it, run the script, add my tokens, and I'm set up again in a few minutes.
 
-With it wired up, the workflow changes qualitatively. Instead of copy-pasting a Slack conversation into the terminal, I ask the agent to *read the thread itself*, pull the spec from the Google Doc it links to, cross-reference the Jira ticket, and then start coding. The agent stops working from my paraphrase of the context and starts working from the context.
+With it set up, I stopped paraphrasing. I ask the agent to read the Slack thread, open the spec it links to, check the Jira ticket, and then start. It works from the source instead of my summary of it.
 
-This is also the tool where I was the most paranoid, because it touches real work data. The design rules:
+This is the one I was most careful with, because it touches real work data:
 
-- **Read-only, enforced at the OAuth scope level** — not by politely asking the code to behave. The Slack token only carries read scopes; it *cannot* post, react, or DM. Google uses least-privilege `.readonly` scopes only. If the agent hallucinates a "send email" call, there is nothing there to call.
-- **It acts as me, not as a bot.** It authenticates with my own user credentials, so it sees exactly what I can see — no bot to invite into channels, no new permission surface beyond what I already had.
-- **Local-first, secrets outside git.** The Slack and Google servers run locally over stdio; data flows through my machine. Tokens live in gitignored files and `~/.config`, never in the repo.
+- **The Slack and Google servers are read-only at the credential level.** The Slack token only has read scopes, so it can't post, react, or send a DM. Google uses only `.readonly` scopes. If the agent tries to send an email, there is no tool for it and no permission behind it.
+- **Jira and Confluence are different.** They go through Atlassian's hosted MCP server, which has write tools (create issue, edit issue, add comment). work-mcp only registers it. For that one I rely on the harness asking me before each call.
+- **It acts as me, not as a bot.** It uses my own credentials, so it sees exactly what I can see, and there's no bot account to invite into channels.
+- **Tokens stay out of git.** They live in gitignored files and `~/.config`.
 
-This one is shaped around the stack my work happens to live in, but the pattern is the point, and it's very reproducible: take the MCP servers for the tools *your* work lives in, force them read-only at the credential level, and wrap the registration in one script so the setup is disposable.
+I built it around the tools my job uses. If yours are different, the same approach still works: find MCP servers for the tools your work lives in, limit their tokens to read scopes wherever the API allows it, and put the setup in one script.
 
-## Session Pet: ambient awareness, with a dragon
+## session-pet: knowing what the agents are doing without checking
 
 **Repo:** [github.com/chud-lori/session-pet](https://github.com/chud-lori/session-pet)
 
-The third wall sounds trivial until you run agents in parallel: *you have no idea what your agents are doing right now.* Working? Finished twenty minutes ago? Stuck on a permission prompt? The information exists, but it's buried in terminal tabs, so you either compulsively alt-tab or you leave an agent blocked, waiting on an answer you didn't know it asked.
+This problem seems small until you run agents in parallel. Is a session still working, did it finish twenty minutes ago, or is it waiting on me? The answer is there in a terminal tab, so either I keep switching tabs to check, or an agent sits blocked on a question I never saw.
 
-Session Pet turns that state into something you perceive without looking for it. It's a tiny pixel-art pet — plain Swift/AppKit, built with `swiftc` directly, no Xcode project, no dependencies — that floats on my desktop and watches **every Claude Code and Codex session on the machine** by tailing their local transcript files. It bobs with sparkles while agents work, plays a ding the moment one needs my input, shows a `!` when a turn finishes, and drifts off to sleep with little z's when everything is idle. Clicking it opens a panel with a live card per session: which tool is running, context size, the last message, how long it's been going.
+session-pet is a small pixel-art pet that floats on the desktop and watches every Claude Code and Codex session on the machine by reading their local transcript files. It's native on both platforms: Swift/AppKit on macOS and Rust/GTK on Linux, with no Electron. It bounces while agents work and chimes when a turn finishes. When a session needs me, it plays a double ping that repeats until I respond. If a session goes quiet mid-turn for five minutes, it marks it stalled. Clicking the pet opens a card for each session, and clicking a card takes me to the terminal running it.
 
-Under the pixels there's a surprisingly careful state machine. "The turn ended" is genuinely tricky to detect — a long tool run looks like silence, a stop-hook can continue a turn seconds after it "ended" — so the scanner parses transcript events backwards for the newest *decisive* event and holds a confirmation window before declaring a session ready. The project has an explicit rule I'd recommend to anyone building notification tooling: **a false "needs you" ding is release-blocking; a false "working" is merely tolerable.** A pet that cries wolf gets ignored, and then it's just decoration.
+Detecting that a turn has ended is harder than it sounds. A long tool call looks like silence, and a stop hook can restart a turn a few seconds after it seemed to end. The scanner reads each transcript backwards to find the newest event that settles the state, then waits out a short confirmation window before it marks a session ready. The project has one rule I'd recommend for any notification tool: a false "needs you" or "ready" ding blocks a release, and a false "working" is acceptable as long as it doesn't last. Once a pet dings for nothing a few times, you stop listening to it.
 
-And yes, it's gamified. The pet earns XP from lines of code shipped across all sessions and grows from an egg through hatchling and adult to a legendary form, across eight species. Mine is currently a dragon. Is this necessary? Absolutely not. Does starting the day with a hatched dragon that levels up when I ship make the whole thing more fun? Absolutely yes.
+It also has XP. Each finished turn earns 5 XP, and the pet goes from egg to hatchling to adult to legendary across 11 species. The project's mascot is a dragon. Mine is currently Mario. None of this is necessary, but I like watching it level up.
 
-## Why this shape: local-first, boring tech, one problem each
+## What the three have in common
 
-Looking at the three together, they share a philosophy that I arrived at mostly by getting burned:
+**They run locally.** The brain is a SQLite file on my disk. The Slack and Google servers run on my laptop with my credentials. The pet reads local files and never touches the network. To be clear, this doesn't keep the data private: anything an agent reads, whether a brain note or a Slack thread, goes to the model provider like the rest of its context. What it does mean is there's no third-party service in between holding a copy of my notes or my company's messages.
 
-**Local-first, always.** The brain is a SQLite file on my disk. The work connectors run on my machine with my credentials. The pet reads local transcript files and never touches the network. Nothing about my memory, my company's Slack, or my session activity leaves the laptop. When tooling sits this close to your work, that's not a nice-to-have.
+**They have few or no dependencies.** Agent Workbench uses only Python's standard library, and session-pet needs nothing beyond each platform's own UI toolkit. work-mcp has the most, since its Slack and Google servers need their own packages. I chose this on purpose. Every dependency I skip is one less setup step that can break and one less package I have to trust, and that matters more when the thing calling my tool is an agent that runs commands without me watching each one.
 
-**Boring, dependency-free tech.** Stdlib Python. SQLite FTS instead of a vector database. Swift compiled with a single `swiftc` command. Every dependency you don't add is a setup step that can't break and a supply chain you don't have to trust — which matters double when the thing consuming your tool is an autonomous agent.
+**Each one does one job.** Memory, context, and status are separate tools, and none of them knows about the others. In a normal task, `brief_task` gives the agent background, work-mcp lets it read the discussion behind the ticket, and the pet tells me when it needs a decision.
 
-**One tool per problem.** Memory, context, awareness. Each tool is small enough to understand completely, and they compose without knowing about each other: `brief_task` briefs the agent, work-mcp lets it read the surrounding discussion, and the pet dings me when it needs a decision. My role shifts from typing code — and from babysitting terminals — to operating a small system of workers that remember, see, and report.
-
-If you work with AI coding agents daily, my honest advice is: the next capability jump on your desk probably won't come from a better model. It will come from fixing the plumbing — give your agents memory, give them your real context, and make their state visible. You don't need my exact tools for that (though [Agent Workbench](https://github.com/chud-lori/agent-workbench), [work-mcp](https://github.com/chud-lori/work-mcp), and [Session Pet](https://github.com/chud-lori/session-pet) are there for the taking). You need the three walls to be gone. Mine are, and I'm not going back.
+If you work with coding agents every day, you don't need these exact tools. You do need some answer to the same three problems: the agent should remember what it learned, read the context the work came from, and make it obvious when it's waiting on you. All three repos are public if you want to start from mine: [Agent Workbench](https://github.com/chud-lori/agent-workbench), [work-mcp](https://github.com/chud-lori/work-mcp), and [session-pet](https://github.com/chud-lori/session-pet).
