@@ -53,8 +53,8 @@ With pointer arithmetic we can access the element of the array using the base po
 int data[5] = {11, 12, 13, 14, 15};
 int *dataPtr = data;
 printf("%d\n", *dataPtr); // Print first element (11)
-printf("%d\n", *(dataPtr + 1); // Print second element (12)
-printf("%d\n", *(dataPtr + 2); // Print third element (12)
+printf("%d\n", *(dataPtr + 1)); // Print second element (12)
+printf("%d\n", *(dataPtr + 2)); // Print third element (13)
 ```
 
 `*(dataPtr + i)` is equivalent to `data[i]` .
