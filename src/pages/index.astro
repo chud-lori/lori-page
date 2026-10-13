@@ -14,20 +14,8 @@ const posts = await getCollection("posts");
 const sortedPosts = getSortedPosts(posts);
 const homePath = getRelativeLocaleUrl(locale, "");
 
-const readingMinutes = (body: string) =>
-  Math.max(1, Math.round(body.trim().split(/\s+/).length / 220));
-
 const formatDate = (date: Date) =>
-  date.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    timeZone: config.site.timezone,
-  });
-
-const postsByYear = Map.groupBy(sortedPosts, post =>
-  post.data.pubDatetime.getFullYear()
-);
+  date.toLocaleDateString("en-CA", { timeZone: config.site.timezone });
 ---
 
 <Layout>
@@ -36,64 +24,39 @@ const postsByYear = Map.groupBy(sortedPosts, post =>
     id="main-content"
     data-layout="index"
     data-home-path={homePath}
-    class="app-layout pt-12 pb-16 sm:pt-20"
+    class="app-layout py-12 sm:py-16"
   >
-    <section class="mb-16">
-      <p
-        class="text-muted-foreground mb-4 font-mono text-[11px] tracking-[0.3em] uppercase"
+    <p class="max-w-2xl text-lg leading-relaxed">
+      Hi, I'm Lori, a backend engineer. I write here about systems, low-level
+      programming, security and the tools I build.
+      <a
+        href={getRelativeLocaleUrl(locale, "about")}
+        class="text-accent decoration-accent/40 hover:decoration-accent underline underline-offset-4"
+        >More about me</a
       >
-        Everything written here, newest first
-      </p>
-      <h1
-        class="font-serif text-6xl leading-[0.95] font-medium tracking-tight italic sm:text-7xl"
-      >
-        Writing
-      </h1>
-      <p class="mt-8 max-w-xl font-serif text-xl leading-relaxed">
-        Here is where I write about things that interest me and my latest
-        exploration also documenting my learning journey. I hope you find
-        something useful here.
-      </p>
-    </section>
+    </p>
 
-    {
-      [...postsByYear].map(([year, yearPosts]) => (
-        <section class="border-border mb-14 grid grid-cols-1 gap-6 border-t pt-8 sm:grid-cols-[8rem_1fr]">
-          <div>
-            <h2 class="text-foreground/30 font-serif text-5xl leading-none font-medium italic tabular-nums">
-              {year}
-            </h2>
-            <p class="text-muted-foreground mt-2 font-mono text-[11px] tracking-widest uppercase">
-              {yearPosts.length} {yearPosts.length === 1 ? "post" : "posts"}
-            </p>
-          </div>
-          <ol class="flex flex-col gap-8">
-            {yearPosts.map(({ id, filePath, body, data }) => (
-              <li>
-                <a
-                  href={getPostUrl(id, filePath, locale)}
-                  class="group flex flex-col gap-1 sm:flex-row sm:items-baseline sm:gap-4"
-                >
-                  <span class="group-hover:text-accent text-lg leading-snug font-medium transition-colors">
-                    {data.title}
-                  </span>
-                  <span class="text-muted-foreground shrink-0 font-mono text-[11px] whitespace-nowrap tabular-nums sm:ms-auto">
-                    <time datetime={data.pubDatetime.toISOString()}>
-                      {formatDate(data.pubDatetime)}
-                    </time>
-                    <span aria-hidden="true"> · </span>
-                    {readingMinutes(body ?? "")} min
-                  </span>
-                </a>
-                <p class="text-muted-foreground mt-2 max-w-xl font-serif text-base leading-relaxed">
-                  {data.description}
-                </p>
-              </li>
-            ))}
-          </ol>
-        </section>
-      ))
-    }
+    <h2 class="text-muted-foreground mt-14 mb-4 font-mono text-sm">Posts</h2>
+    <ol class="flex flex-col">
+      {
+        sortedPosts.map(({ id, filePath, data }) => (
+          <li class="border-border flex flex-col gap-1 border-t py-3 sm:flex-row sm:items-baseline sm:gap-6">
+            <time
+              datetime={data.pubDatetime.toISOString()}
+              class="text-muted-foreground shrink-0 font-mono text-sm tabular-nums sm:w-24"
+            >
+              {formatDate(data.pubDatetime)}
+            </time>
+            <a
+              href={getPostUrl(id, filePath, locale)}
+              class="text-accent decoration-accent/40 leading-snug font-medium underline-offset-4 hover:underline"
+            >
+              {data.title}
+            </a>
+          </li>
+        ))
+      }
+    </ol>
   </main>
   <Footer />
 </Layout>

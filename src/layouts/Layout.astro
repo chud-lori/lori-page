@@ -49,10 +49,6 @@ const rssHref = getRelativeLocaleUrl(
       cssVariable="--font-inter"
       preload={[{ subset: "latin", weight: 400, style: "normal" }]}
     />
-    <Font
-      cssVariable="--font-eb-garamond"
-      preload={[{ subset: "latin", weight: 500, style: "italic" }]}
-    />
     <Font cssVariable="--font-jetbrains-mono" />
 
     <!-- Primary meta -->
@@ -136,7 +132,7 @@ const rssHref = getRelativeLocaleUrl(
     <ClientRouter />
   </head>
   <body
-    class="site-shell bg-background font-app text-foreground selection:bg-accent/30 flex min-h-svh flex-col antialiased"
+    class="bg-background font-app text-foreground selection:bg-accent/30 flex min-h-svh flex-col antialiased"
   >
     <slot />
     <script>

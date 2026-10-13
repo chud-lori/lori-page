@@ -16,14 +16,14 @@ const { title, description, ...props } = data;
 <li class="my-6">
   <a
     href={getPostUrl(id, filePath, Astro.currentLocale)}
-    class="hover:text-accent inline-block text-lg leading-snug font-medium transition-colors"
+    class="text-accent decoration-accent/40 inline-block text-lg leading-snug font-medium underline-offset-4 hover:underline"
   >
     <Heading transition:name={toTransitionName(title)}>
       {title}
     </Heading>
   </a>
   <Datetime {...props} class="text-muted-foreground mt-1 font-mono text-xs" />
-  <p class="text-muted-foreground mt-2 font-serif leading-relaxed">
+  <p class="text-muted-foreground mt-2 leading-relaxed">
     {description}
   </p>
 </li>
