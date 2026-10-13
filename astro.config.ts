@@ -44,7 +44,7 @@ export default defineConfig({
       rehypePlugins: [rehypeCallouts],
     }),
     shikiConfig: {
-      themes: { light: "min-light", dark: "night-owl" },
+      themes: { light: "github-light", dark: "github-dark-dimmed" },
       defaultColor: false,
       wrap: false,
       transformers: [
@@ -67,6 +67,30 @@ export default defineConfig({
       weights: [300, 400, 500, 600, 700],
       styles: ["normal", "italic"],
       formats: ["woff", "ttf"],
+    },
+    {
+      name: "Inter",
+      cssVariable: "--font-inter",
+      provider: fontProviders.google(),
+      fallbacks: ["sans-serif"],
+      weights: [400, 500, 600, 700],
+      styles: ["normal"],
+    },
+    {
+      name: "EB Garamond",
+      cssVariable: "--font-eb-garamond",
+      provider: fontProviders.google(),
+      fallbacks: ["serif"],
+      weights: [400, 500, 600],
+      styles: ["normal", "italic"],
+    },
+    {
+      name: "JetBrains Mono",
+      cssVariable: "--font-jetbrains-mono",
+      provider: fontProviders.google(),
+      fallbacks: ["monospace"],
+      weights: [400, 500],
+      styles: ["normal", "italic"],
     },
   ],
   env: {
