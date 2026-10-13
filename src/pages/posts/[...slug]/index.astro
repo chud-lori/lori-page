@@ -113,13 +113,15 @@ const ogImage = ogImageUrl
   >
     <h1
       style={{ viewTransitionName: toTransitionName(title) }}
-      class="text-accent inline-block text-2xl font-bold sm:text-3xl"
+      class="mt-8 text-4xl leading-[1.15] font-bold tracking-tight sm:text-5xl"
     >
       {title}
     </h1>
 
-    <div class="my-2 flex items-center gap-2">
-      <Datetime {pubDatetime} {modDatetime} {timezone} size="lg" />
+    <div
+      class="text-muted-foreground my-6 flex items-center gap-2 font-mono text-xs"
+    >
+      <Datetime {pubDatetime} {modDatetime} {timezone} />
       <span
         aria-hidden="true"
         class:list={[

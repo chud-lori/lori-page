@@ -10,11 +10,19 @@
     h3,
     h4,
     th {
-      @apply text-foreground mb-3;
+      @apply text-foreground mb-3 font-semibold tracking-tight;
+    }
+
+    h2 {
+      @apply mt-14;
     }
 
     h3 {
-      @apply italic;
+      @apply mt-10;
+    }
+
+    p {
+      @apply leading-[1.75];
     }
 
     p,
@@ -28,7 +36,7 @@
     }
 
     a {
-      @apply text-foreground hover:text-accent wrap-break-word decoration-dashed underline-offset-4 focus-visible:no-underline;
+      @apply text-accent decoration-accent/40 hover:decoration-accent font-medium wrap-break-word underline-offset-4 focus-visible:no-underline;
     }
 
     ul {
@@ -44,7 +52,7 @@
     }
 
     img {
-      @apply border-border mx-auto border;
+      @apply border-border mx-auto rounded-md border;
     }
 
     img[role="button"] {
@@ -71,7 +79,7 @@
     }
 
     code {
-      @apply bg-muted/75 text-foreground rounded p-1 wrap-break-word before:content-none after:content-none;
+      @apply bg-muted text-foreground rounded-sm px-1.5 py-0.5 font-mono text-[0.88em] wrap-break-word before:content-none after:content-none;
     }
 
     .astro-code code {
@@ -79,7 +87,7 @@
     }
 
     blockquote {
-      @apply border-s-accent/80 wrap-break-word opacity-80;
+      @apply border-s-border text-muted-foreground border-s-2 font-normal wrap-break-word not-italic;
     }
 
     details:not(.callout) {
@@ -97,7 +105,7 @@
 
   /* ===== Code Blocks & Syntax Highlighting ===== */
   .astro-code {
-    @apply outline-border flex border bg-(--shiki-light-bg) text-(--shiki-light) [&_span]:text-(--shiki-light);
+    @apply outline-border flex rounded-md border bg-(--shiki-light-bg) font-mono text-(--shiki-light) [&_span]:text-(--shiki-light);
   }
 
   html[data-theme="dark"] .astro-code {
