@@ -1,52 +1,84 @@
-import { defineConfig } from "astro/config";
-import tailwind from "@astrojs/tailwind";
-import react from "@astrojs/react";
+import {
+  defineConfig,
+  envField,
+  fontProviders,
+  svgoOptimizer,
+} from "astro/config";
+import tailwindcss from "@tailwindcss/vite";
+import mdx from "@astrojs/mdx";
+import sitemap from "@astrojs/sitemap";
+import { unified } from "@astrojs/markdown-remark";
 import remarkToc from "remark-toc";
 import remarkCollapse from "remark-collapse";
-import sitemap from "@astrojs/sitemap";
-import { SITE } from "./src/config";
-import partytown from '@astrojs/partytown'
+import rehypeCallouts from "rehype-callouts";
+import {
+  transformerNotationDiff,
+  transformerNotationHighlight,
+  transformerNotationWordHighlight,
+} from "@shikijs/transformers";
+import { transformerFileName } from "./src/utils/transformers/fileName";
+import config from "./astro-paper.config";
 
-// https://astro.build/config
 export default defineConfig({
-  site: SITE.website,
+  site: config.site.url,
   integrations: [
-    tailwind({
-      applyBaseStyles: false,
-    }),
-    react(),
+    mdx(),
     sitemap({
-      filter: page => SITE.showArchives || !page.endsWith("/archives"),
+      filter: page =>
+        config.features?.showArchives !== false || !page.endsWith("/archives/"),
     }),
-    partytown({
-          config: {
-            forward: ["dataLayer.push"],
-          },
-    })
   ],
+  i18n: {
+    locales: ["en"],
+    defaultLocale: "en",
+    routing: {
+      prefixDefaultLocale: false,
+    },
+  },
   markdown: {
-    remarkPlugins: [
-      remarkToc,
-      [
-        remarkCollapse,
-        {
-          test: "Table of contents",
-        },
+    processor: unified({
+      remarkPlugins: [
+        remarkToc,
+        [remarkCollapse, { test: "Table of contents" }],
       ],
-    ],
+      rehypePlugins: [rehypeCallouts],
+    }),
     shikiConfig: {
-      // For more themes, visit https://shiki.style/themes
       themes: { light: "min-light", dark: "night-owl" },
-      wrap: true,
+      defaultColor: false,
+      wrap: false,
+      transformers: [
+        transformerFileName({ style: "v2", hideDot: false }),
+        transformerNotationHighlight(),
+        transformerNotationWordHighlight(),
+        transformerNotationDiff({ matchAlgorithm: "v3" }),
+      ],
     },
   },
   vite: {
-    optimizeDeps: {
-      exclude: ["@resvg/resvg-js"],
+    plugins: [tailwindcss()],
+  },
+  fonts: [
+    {
+      name: "Google Sans Code",
+      cssVariable: "--font-google-sans-code",
+      provider: fontProviders.google(),
+      fallbacks: ["monospace"],
+      weights: [300, 400, 500, 600, 700],
+      styles: ["normal", "italic"],
+      formats: ["woff", "ttf"],
+    },
+  ],
+  env: {
+    schema: {
+      PUBLIC_GOOGLE_SITE_VERIFICATION: envField.string({
+        access: "public",
+        context: "client",
+        optional: true,
+      }),
     },
   },
-  scopedStyleStrategy: "where",
   experimental: {
-    contentLayer: true,
+    svgOptimizer: svgoOptimizer(),
   },
 });

@@ -9,5 +9,11 @@
 !astro.config.ts
 !package.json
 !.prettierrc
-!eslint.config.mjs
-!README.md
+!eslint.config.js
+!.vscode
+
+# Ignore MDX files
+*.mdx
+
+# Hand-written content keeps its own formatting
+/src/content
