@@ -6,7 +6,7 @@ description: "About Lori, a software engineer."
 # Lori
 **Senior Backend Engineer**
 
-📧 [Email](mailto:nchudlori@gmail.com) |
+📧 [Email](mailto:reachme@lori.my.id) |
 🔗 [LinkedIn](https://www.linkedin.com/in/chud-lori) |
 💻 [GitHub](https://github.com/chud-lori) |
 🌍 [Website](https://lori.my.id/)
@@ -26,4 +26,4 @@ Outside work, Lori builds the tools that daily work seems to be missing. [Rusty 
 ---
 
 ## Contact
-For collaborations or discussions, feel free to reach out via [Email](mailto:nchudlori@gmail.com) or connect on [LinkedIn](https://www.linkedin.com/in/chud-lori).
+For collaborations or discussions, feel free to reach out via [Email](mailto:reachme@lori.my.id) or connect on [LinkedIn](https://www.linkedin.com/in/chud-lori).
