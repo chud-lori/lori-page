@@ -33,22 +33,6 @@
   @apply text-accent;
 }
 
-/* Sidebar on the left from lg up; the header stacks on top below that */
-@media (width >= 64rem) {
-  .site-shell {
-    display: grid;
-    grid-template-columns: 18rem minmax(0, 1fr);
-    align-content: start;
-  }
-  .site-shell > * {
-    grid-column: 2;
-  }
-  .site-shell > #site-header {
-    grid-column: 1;
-    grid-row: 1 / span 50;
-  }
-}
-
 :target {
   scroll-margin-block: 1rem;
 }
